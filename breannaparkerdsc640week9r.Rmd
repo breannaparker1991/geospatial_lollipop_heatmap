@@ -1,0 +1,124 @@
+---
+title: "week9"
+output: html_document
+date: "2024-02-06"
+---
+
+```{r setup, include=FALSE}
+setwd("C:/Users/brean/OneDrive/Desktop/640/week9/breannaparkerdsc640week9")
+knitr::opts_chunk$set(echo = TRUE)
+
+
+```
+
+
+
+```{r}
+#load dataset 1
+library(rlang)
+library(readr)
+
+data1 <- read.csv("costcos-geocoded.csv")
+data1
+
+```
+
+
+
+
+```{r}
+#load dataset 2
+data2 <- read.csv("ppg2008.csv")
+data2
+
+```
+
+
+
+```{r}
+#removing the nonnumerical columns, plus a few more to make the data easier to read
+df = subset(data2, select = -c(Name,G,MIN,PTS,FGM,FGA,FTM,FTA,FTP) )
+df
+
+```
+
+```{r}
+#heatmap! 
+my_colors<- colorRampPalette(c("purple", "pink"))
+heatmap(as.matrix(df), Rowv = NA, Colv = NA, col = my_colors(100))
+
+```
+```{r}
+#getting info from geo dataset
+
+summary(data1[,c("Longitude","Latitude")])
+
+```
+
+
+
+```{r}
+#registering my API
+register_stadiamaps("ec8cf610-1ebf-4a6c-86e3-bbb92ccb14d0", write = FALSE)
+
+
+```
+
+
+```{r}
+#making a map
+library("ggmap")
+library(ggplot2)
+
+
+usa <- c(left = -125, bottom = 25.75, right = -67, top = 49)
+get_stadiamap(usa, zoom = 5, maptype = "alidade_smooth") |> ggmap()
+
+```
+
+
+```{r}
+#libraries
+library("dplyr", warn.conflicts = FALSE)
+library("forcats")
+library(ggplot2)
+
+
+# geospatial plot
+qmplot(Longitude, Latitude, data = data1, maptype = "stamen_toner_lite", color = I("black"))
+
+
+
+```
+
+
+
+
+
+
+
+```{r}
+#lollipop chart
+
+library(ggplot2)
+
+df = data.frame(x = data2$Name,
+                 y = data2$G, replace = TRUE)
+ 
+# Plot
+ggplot(df, aes(x = x, y = y)) +
+  geom_point() + 
+  geom_segment(aes(x=x, xend=x, y=0, yend=y), 
+               color = "blue", lwd = 1) +
+  geom_point(size = 4) +
+  coord_flip() +
+  ggtitle("G by Name") +
+  xlab("Names") + ylab("G Value")
+
+
+```
+
+
+
+
+
